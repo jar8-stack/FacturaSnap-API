@@ -1,5 +1,6 @@
 const db = require("../models");
 const Facturas = db.facturas;
+const Tesseract = require('tesseract.js');
 
 /**
  * @swagger
@@ -233,5 +234,66 @@ exports.deleteFactura = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error al eliminar la factura" });
+  }
+};
+
+
+/**
+ * @swagger
+ * /api/facturas/extract-text:
+ *   post:
+ *     summary: Extraer texto de una imagen en formato Base64.
+ *     description: Este endpoint permite extraer texto de una imagen en formato Base64 utilizando Tesseract.js.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               base64Image:
+ *                 type: string
+ *                 description: Imagen en formato Base64.
+ *     responses:
+ *       200:
+ *         description: Texto extraído exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 extractedText:
+ *                   type: string
+ *                   description: Texto extraído de la imagen.
+ *       400:
+ *         description: Solicitud incorrecta. La imagen en formato Base64 es requerida.
+ *       500:
+ *         description: Error al procesar la imagen.
+ *
+ * @param {object} req - Objeto de solicitud de Express.
+ * @param {object} res - Objeto de respuesta de Express.
+ * @returns {Promise<void>}
+ */
+exports.extractTextFromImage = async (req, res) => {
+  try {
+    const base64Image = req.body.base64Image; // Asumiendo que envías la imagen en el cuerpo de la solicitud con el nombre 'base64Image'
+
+    if (!base64Image) {
+      return res.status(400).json({ message: 'La imagen en formato Base64 es requerida.' });
+    }
+
+    // Decodificar la imagen Base64
+    const imageBuffer = Buffer.from(base64Image, 'base64');
+
+    // Guardar la imagen localmente (opcional)
+    // fs.writeFileSync('imagen.jpg', imageBuffer);
+
+    // Realizar el reconocimiento de texto con Tesseract
+    const { data: { text } } = await Tesseract.recognize(imageBuffer, 'eng');
+
+    return res.status(200).json({ extractedText: text });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({ message: 'Error al procesar la imagen.' });
   }
 };

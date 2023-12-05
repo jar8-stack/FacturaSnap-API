@@ -10,6 +10,7 @@ module.exports = (app) => {
     facturasRouter.post("/", auth.requireAuth, facturasController.createFactura);
     facturasRouter.put("/:id", auth.requireAuth, facturasController.updateFactura);
     facturasRouter.delete("/:id", auth.requireAuth, facturasController.deleteFactura);
+    facturasRouter.post("/extract-text", facturasController.extractTextFromImage);
   
     app.use("/api/facturas", facturasRouter);
 };

@@ -3,8 +3,11 @@ const express = require("express");
 const cors = require("cors");
 const swaggerUi = require('swagger-ui-express');
 const specs = require('./swagger');
+const bodyParser = require('body-parser');
 
 const app = express();
+
+app.use(bodyParser.json({ limit: '10mb' })); // Ajusta el valor según tus necesidades
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
