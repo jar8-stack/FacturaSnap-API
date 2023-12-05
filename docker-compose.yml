@@ -1,0 +1,30 @@
+version: '3.3'
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "4502:3306"
+  app:
+    build: ./bezkoder-app
+    restart: "on-failure:5"  # Agregamos un retraso de 5 segundos antes de reiniciar
+    env_file: ./.env
+    environment:
+      PORT: ${PORT_DB}
+      DB_HOST: db
+      DB_USER: ${DB_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - db
+    ports:
+      - ${PORT}:${PORT}
+    command: npm start
+volumes:
+  db_data:
