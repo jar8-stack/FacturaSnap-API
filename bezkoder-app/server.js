@@ -7,7 +7,10 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-app.use(bodyParser.json({ limit: '10mb' })); // Ajusta el valor según tus necesidades
+// Configurar body-parser
+// Configurar body-parser con un límite más alto (por ejemplo, 50 MB)
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
