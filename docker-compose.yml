@@ -13,7 +13,7 @@ services:
       - "4502:3306"
   app:
     build: ./bezkoder-app
-    restart: "on-failure:5"  # Agregamos un retraso de 5 segundos antes de reiniciar
+    restart: "on-failure:5"
     env_file: ./.env
     environment:
       PORT: ${PORT_DB}
@@ -25,6 +25,12 @@ services:
       - db
     ports:
       - ${PORT}:${PORT}
-    command: npm start
+  python-app:
+    build: .
+    restart: "on-failure:5"
+    volumes:
+      - ./python_scripts:/app/python_scripts
+    ports:
+      - "4545:4545"  # Puerto 4545 en el host se mapea al puerto 4545 en el contenedor
 volumes:
   db_data:
